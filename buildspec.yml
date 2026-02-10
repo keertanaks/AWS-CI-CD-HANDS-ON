@@ -3,27 +3,28 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      java: corretto21
+
+  pre_build:
+    commands:
+      - echo "Build started on $(date)"
+      - echo "Listing repo root"
+      - ls -la
+      - echo "Going into aws/ (where pom.xml is)"
+      - cd aws
+      - ls -la
+      - mvn -v
 
   build:
     commands:
-      - "echo Starting build in root"
-      - "pwd"
-      - "ls -lah"
-      - "cd aws"
-      - "echo Now inside aws directory"
-      - "pwd"
-      - "ls -lah"
-      - "mvn -v"
-      - "mvn clean package -DskipTests"
-      - "ls -lah target"
-      - "JAR=$(ls target/*.jar | head -n 1)"
-      - "echo Built jar is $JAR"
-      - "cp \"$JAR\" app.jar"
-      - "ls -lah app.jar"
+      - mvn clean package -DskipTests
+      - echo "Listing target folder"
+      - ls -lah target
+      - cp target/*.jar ../app.jar
+      - cd ..
+      - ls -lah
 
 artifacts:
   files:
-    - aws/app.jar
-    - aws/Procfile
-  discard-paths: yes
+    - Procfile
+    - app.jar
